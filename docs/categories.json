@@ -1,0 +1,81 @@
+[
+    {
+        "name":"Missa",
+        "subcats": [
+            "Canto de Entrada",
+            "Sinal da Cruz",
+            "Ato Penitencial",
+            "Glória",
+            "Entrada da Palavra",
+            "Salmo",
+            "Aclamação ao Evangelho",
+            "Ofertório",
+            "Santo Senhor",
+            "Cordeiro de Deus",
+            "Amém",
+            "Comunhão",
+            "Ação de Graças",
+            "Canto Final",
+            "Outros Missa"
+        ]
+    },
+    {
+        "name":"Animadas",
+        "subcats": [
+            "Abraço da Paz",
+            "Jovens",
+            "Axé",
+            "Antigas",
+            "Crianças",
+            "Novas",
+            "Coreografadas"
+        ]
+    },
+    {
+        "name":"Oração",
+        "subcats": [
+            "Espírito Santo",
+            "Louvor",
+            "Adoração",
+            "Cura",
+            "Querigma",
+            "Maria",
+            "SCJ,Vocacional",
+            "Milagres",
+            "Santidade"
+        ]
+    },
+    {
+        "name":"Secular",
+        "subcats": [
+            "Internacional",
+            "MPB",
+            "Sertanejo",
+            "Outras"
+        ]
+    },
+    {
+        "name":"Tempos Litúrgicos",
+        "subcats": [
+            "Advento",
+            "Natal",
+            "Quaresma",
+            "Semana Santa",
+            "Páscoa",
+            "Santos",
+            "Solenidades",
+            "Dias Festivos"
+        ]
+    },
+    {
+        "name":"Outras",
+        "subcats": [
+            "Amizade",
+            "Arca da Aliança",
+            "Velório",
+            "Autorais",
+            "Esponsais",
+            "Casamento"
+        ]
+    }
+]
