@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:my_repertory/app_controller.dart';
-import 'package:my_repertory/app_repository.dart';
 
+import '../app_repository.dart';
+import 'home_controller.dart';
 import 'widgets/song_list_tile.dart';
 
 class HomeContent extends StatelessWidget {
-  final String category;
+  const HomeContent({super.key, required this.category});
 
-  const HomeContent({
-    Key? key,
-    required this.category,
-  }) : super(key: key);
+  final String category;
 
   @override
   Widget build(BuildContext context) {
-    final controller = AppController(AppDioRepository());
+    final controller = HomeController(AppDioRepository());
     return Padding(
         padding: const EdgeInsets.only(left: 8),
         child: FutureBuilder(

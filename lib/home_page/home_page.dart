@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_repertory/app_repository.dart';
 
-import '../app_repository.dart';
+import '../app_states.dart';
 import 'home_content.dart';
 import '../app_controller.dart';
+import 'home_controller.dart';
 import 'widgets/new_song_dialog.dart';
 
 class HomePage extends StatefulWidget {
@@ -15,80 +18,94 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  final controller = AppController(AppDioRepository());
-
   int _selectedIndex = 0;
-  final pages = [
-    const HomeContent(category: ''),
-    const Center(
-      child: Text('Favoritos'),
-    ),
-    const HomeContent(category: ''),
-    const Center(
-      child: Text('Minhas listas'),
-    ),
-    const Center(
-      child: Text('Configurações'),
-    ),
-  ];
+  final pageController = PageController();
+  final _selectedCategory = ValueNotifier('');
 
   @override
   Widget build(BuildContext context) {
+    final controller = context.read<AppController>();
+    controller.getCategories();
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
       ),
       drawer: Drawer(
-        child: FutureBuilder(
-          future: controller.getCategories(),
-          builder: (context, snapshot) {
-            if (snapshot.hasData && !snapshot.hasError) {
-              final categories = snapshot.data!;
-              return ListView.builder(
-                itemCount: categories.length,
-                itemBuilder: (context, index) {
-                  var myExpansionTile = ExpansionTile(
-                    title: Text(categories[index].name),
-                    children: [
-                      ListTile(
-                        title: const Text('Todas'),
-                        onTap: () {
-                          setState(() {
-                            pages[0] =
-                                HomeContent(category: categories[index].name);
-                            _selectedIndex = 0;
+        child: BlocBuilder(
+            bloc: context.read<AppController>(),
+            builder: (context, state) {
+              if (state is ErrorAppState) {
+                return const Center(child: Text('Error'));
+              }
+              if (state is SuccessAppState) {
+                final categories = state.allCategories;
+                return ListView.builder(
+                  itemCount: categories.length,
+                  itemBuilder: (context, index) {
+                    var myExpansionTile = ExpansionTile(
+                      title: Text(categories[index].name),
+                      children: [
+                        ListTile(
+                          title: const Text('Todas'),
+                          onTap: () {
+                            _selectedCategory.value = categories[index].name;
+                            pageController.jumpToPage(0);
                             Navigator.pop(context);
-                          });
-                        },
-                      ),
-                    ],
-                  );
-                  for (var sub in categories[index].subcats) {
-                    myExpansionTile.children.add(
-                      ListTile(
-                        title: Text(sub),
-                        onTap: () {
-                          setState(() {
-                            pages[0] = HomeContent(category: sub);
-                            _selectedIndex = 0;
-                            Navigator.pop(context);
-                          });
-                        },
-                      ),
+                          },
+                        ),
+                      ],
                     );
-                  }
-                  return myExpansionTile;
-                },
-              );
-            }
-            if (!snapshot.hasData && !snapshot.hasError) {
+                    for (var sub in categories[index].subcats) {
+                      myExpansionTile.children.add(
+                        ListTile(
+                          title: Text(sub),
+                          onTap: () {
+                            _selectedCategory.value = sub;
+                            pageController.jumpToPage(0);
+                            Navigator.pop(context);
+                          },
+                        ),
+                      );
+                    }
+                    return myExpansionTile;
+                  },
+                );
+              }
               return const Center(child: CircularProgressIndicator());
-            }
-            return const Center(child: Text('Error'));
-          },
-        ),
+            }),
       ),
-      body: pages[_selectedIndex],
+      body: PageView(
+        controller: pageController,
+        children: [
+          BlocProvider(
+            create: (context) => HomeController(AppDioRepository()),
+            child: ValueListenableBuilder(
+              valueListenable: _selectedCategory,
+              builder: (context, value, _) {
+                return HomeContent(category: value);
+              },
+            ),
+          ),
+          const Center(
+            child: Text('Favoritos'),
+          ),
+          BlocProvider(
+            create: (context) => HomeController(AppDioRepository()),
+            child: ValueListenableBuilder(
+              valueListenable: _selectedCategory,
+              builder: (context, value, _) {
+                return HomeContent(category: value);
+              },
+            ),
+          ),
+          const Center(
+            child: Text('Minhas listas'),
+          ),
+          const Center(
+            child: Text('Configurações'),
+          ),
+        ],
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       floatingActionButton: FloatingActionButton(
         onPressed: () {
@@ -107,7 +124,10 @@ class _HomePageState extends State<HomePage> {
             icon: Icon(Icons.favorite),
             label: 'Favorites',
           ),
-          BottomNavigationBarItem(icon: SizedBox(width: 1), label: ''),
+          BottomNavigationBarItem(
+            icon: SizedBox.shrink(),
+            label: '',
+          ),
           BottomNavigationBarItem(
             icon: Icon(Icons.list),
             label: 'Lists',
@@ -118,16 +138,11 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
         currentIndex: _selectedIndex,
-        onTap: (_changeContent),
+        onTap: (value) {
+          pageController.jumpToPage(value);
+          _selectedIndex = value;
+        },
       ),
     );
-  }
-
-  _changeContent(index) {
-    if (index != 2) {
-      setState(() {
-        _selectedIndex = index;
-      });
-    }
   }
 }

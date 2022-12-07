@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:my_repertory/app_controller.dart';
+import 'package:my_repertory/app_repository.dart';
 
 import 'home_page/home_page.dart';
 
@@ -26,7 +29,10 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blueGrey,
       ),
       themeMode: ThemeMode.light,
-      home: const HomePage(title: 'Meu Repertório'),
+      home: BlocProvider(
+        create: (context) => AppController(AppDioRepository()),
+        child: const HomePage(title: 'Meu Repertório'),
+      ),
     );
   }
 }
